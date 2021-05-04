@@ -1,0 +1,24 @@
+{
+  "name": "discord-world-time-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "csv-parse": "^4.15.4",
+    "discord.js": "^12.5.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/me-mee3/discord-world-time-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/me-mee3/discord-world-time-bot/issues"
+  },
+  "homepage": "https://github.com/me-mee3/discord-world-time-bot#readme"
+}
