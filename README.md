@@ -1,25 +1,20 @@
 # discord-world-time-bot
 
-## setup
+## Getting started
 
-dotenv ディレクトリを作成し、configファイルを作成
+1. dotenv ディレクトリを作成し、configファイルを作成
+  ```
+  mkdir dotenv; touch dotenv/config
+  ```
 
-```
-mkdir dotenv; touch dotenv/config
-```
+2. 環境変数にトークンを設定する
+  [Discord Developer Portal](https://discord.com/developers/applications/)　にて Botを選択 > Settings > Bot > TOKEN > Click to Reveal Token
+  configファイルの内容は以下の通り
+  ```
+  BOT_TOKEN={Botのトークン}
+  ```
 
-環境変数にトークンを設定する
-
-https://discord.com/developers/applications/　にて　Botを選択 > Settings > Bot > TOKEN > Click to Reveal Token
-
-configファイルの内容は以下の通り
-
-```
-BOT_TOKEN={Botのトークン}
-```
-
-Bot を実行する
-
-```
-node -r dotenv/config index.js
-```
+3. Bot を実行する
+  ```bash
+  node -r dotenv/config index.js
+  ```
