@@ -1,12 +1,8 @@
 const fs = require('fs');
 const csvSync = require('csv-parse/lib/sync');
-
-
-
 const Discord = require('discord.js');
 const client = new Discord.Client();
-let token = fs.readFileSync("./config.txt", "utf-8");
-const BOT_TOKEN = token;
+const BOT_TOKEN = process.env.BOT_TOKEN;
 
 async function main() {
     client.on('ready', () => {
