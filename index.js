@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const BOT_TOKEN = process.env.BOT_TOKEN;
 
-async function main() {
+function main() {
     client.on('ready', () => {
         console.log(`Logged in as ${client.user.tag}!`);
     });
@@ -19,7 +19,7 @@ async function main() {
 };
 
 // 都市の時間帯を表示
-async function showTime() {
+function showTime() {
     let dateList = csvSync(fs.readFileSync("./datelist.txt"));
     let date = new Date();
     let data = [];
