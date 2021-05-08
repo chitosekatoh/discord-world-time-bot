@@ -8,17 +8,10 @@
     ```
 
 2. 環境変数の用意
-  - dotenv ディレクトリを作成し、configファイルを作成
-      ```
-      mkdir dotenv; touch dotenv/config
-      ```
-  
   - Botトークンを取得する
     [Discord Developer Portal](https://discord.com/developers/applications/)　にて Botを選択 > Settings > Bot > TOKEN > Click to Reveal Token でトークンをコピー
 
-  - 環境変数にトークンを設定する
-
-    configファイルの内容は以下の通り
+  - .envにエントリを定義する
       ```
       BOT_TOKEN={Botのトークン}
       ```
