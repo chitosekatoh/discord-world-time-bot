@@ -104,4 +104,3 @@ dist
 .tern-port
 
 config_local.txt
-dotenv/config
