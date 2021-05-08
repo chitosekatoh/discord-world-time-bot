@@ -11,7 +11,7 @@ function main() {
 
     client.on('message', async msg => {
         if (msg.content === '/time') {
-            msg.reply(await showTime());
+            msg.reply(showTime());
         }   
     });
 
