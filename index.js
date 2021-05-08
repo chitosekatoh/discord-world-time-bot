@@ -4,6 +4,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const BOT_TOKEN = process.env.BOT_TOKEN;
 
+
 function main() {
     client.on('ready', () => {
         console.log(`Logged in as ${client.user.tag}!`);
@@ -11,7 +12,12 @@ function main() {
 
     client.on('message', async msg => {
         if (msg.content === '/time') {
-            msg.reply(showTime());
+            let embed = new Discord.MessageEmbed();
+            showTime().forEach(function (value) {
+                embed.addField(value.name, value.date + value.time, true)
+                    .setColor('RANDOM')
+            });
+            msg.reply(embed);
         }   
     });
 
@@ -20,29 +26,16 @@ function main() {
 
 // 都市の時間帯を表示
 function showTime() {
-    let dateList = csvSync(fs.readFileSync("./datelist.txt"));
+    let dateList = csvSync(fs.readFileSync('./datelist.txt'));
     let date = new Date();
     let data = [];
 
     dateList.forEach(function (value) {
-        let row = [];
+        let row = {};
         valueDate = value[1]; // value[0]は都市名
 
         let M = date.getMonth() + 1;
-        let M_EN = [
-            "Jan.",
-            "Feb.",
-            "Mar.",
-            "Apr.",
-            "May",
-            "Jun.",
-            "Jul.",
-            "Aug.",
-            "Sep.",
-            "Oct.",
-            "Nov.",
-            "Dec.",
-        ];
+        let M_EN = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
         MM = M_EN[M - 1];
 
         let D = date.getDate();
@@ -57,28 +50,25 @@ function showTime() {
         }
 
         if (D === 1 || D === 11 || D === 21 || D === 31) {
-            D = D + "st";
+            D = D + 'st';
         } else if (D === 2 || D === 12 || D === 22) {
-            D = D + "nd";
+            D = D + 'nd';
         } else if (D === 3 || D === 13 || D === 23) {
-            D = D + "rd";
+            D = D + 'rd';
         } else {
-            D = D + "th";
+            D = D + 'th';
         }
 
-        let checkMeridian = h < 12 ? "a.m." : "p.m.";
+        let checkMeridian = h < 12 ? 'a.m.' : 'p.m.';
 
-        row.push( "| " + value[0].padEnd(20) + " | "
-            + (MM + " " + D).padEnd(9) + " | "
-            + ("00" + (h % 12)).slice(-2) + ":" + ("00" + m).slice(-2) + " " +	checkMeridian + " | "
-        );
-
+        row = {
+            name: value[0],
+            date: (MM + ' ' + D).padEnd(9),
+            time: ('00' + (h % 12)).slice(-2) + ':' + ('00' + m).slice(-2) + ' ' +	checkMeridian
+        }
+            
         data.push(row);
     });
-        
-    data.unshift("| " + "City".padEnd(30) + " | " + "Date".padEnd(9) + " | " + "Time".padEnd(10) + " |");
-    data.unshift("");
-    data.push("_This bot doesn't consider daylight saving time!_");
 
     return data;
 }
