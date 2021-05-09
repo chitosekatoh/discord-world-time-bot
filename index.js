@@ -14,7 +14,8 @@ function main() {
         if (msg.content === '/time') {
             let embed = new Discord.MessageEmbed();
             showTime().forEach(function (value) {
-                embed.addField(value.name, value.date + value.time, true)
+                embed.setTitle('This bot doesn\'t consider daylight saving time!')
+                    .addField(value.name, value.date + value.time, true)
                     .setColor('RANDOM')
             });
             msg.reply(embed);
