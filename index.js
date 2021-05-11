@@ -64,12 +64,8 @@ function showTime() {
     dateList.forEach(function (value) {
         let row = {};
         let passedTime = value[1];
-
-        
         let monthName = monthEnglish[currentDate.getMonth()];
-
         let date = currentDate.getDate();
-
         // GMTに一度戻してdatelistの時差を増減する
         let hour = currentDate.getHours() - 9 + parseInt(passedTime);
         let minute = currentDate.getMinutes();
@@ -107,7 +103,6 @@ function showTime() {
 function addTime(msgContent) {
     let addData = msgContent.split(' ')[1];
     let data = [addData.split(',')[0], addData.split(',')[1]];
-
     let dateList = csvSync(fs.readFileSync('./datelist.txt'));
 
     dateList.push(data);
