@@ -3,7 +3,7 @@ const csvSync = require('csv-parse/lib/sync');
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const BOT_TOKEN = process.env.BOT_TOKEN;
-
+const monthEnglish = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
 
 function main() {
     client.on('ready', () => {
@@ -18,11 +18,11 @@ function main() {
         if (msg.content.includes('/time-add')) {
             let result = addTime(msg.content);
 
-            if (result) {
-                msg.reply("都市の登録に成功しました。");
+            if (result.flg) {
+                msg.reply(result.embed);
                 msg.reply(showTime());
             } else {
-                msg.reply("都市の登録に失敗しました。");
+                msg.reply(result.embed);
             }
         }
 
@@ -32,11 +32,11 @@ function main() {
             } else {
                 let result = deleteTime(msg.content);
 
-                if (result) {
-                    msg.reply("都市の削除に成功しました。");
+                if (result.flg) {
+                    msg.reply(result.embed);
                     msg.reply(showTime());
                 } else {
-                    msg.reply("都市の削除に失敗しました。");
+                    msg.reply(result.embed);
                 }
             }
         }
@@ -45,94 +45,163 @@ function main() {
     client.login(BOT_TOKEN);
 };
 
-// 都市の時間帯を表示
+// 都市ごとの時間帯を表示
 function showTime() {
     let dateList = csvSync(fs.readFileSync('./datelist.txt'));
-    let date = new Date();
+    let currentDate = new Date();
     let data = [];
 
     dateList.forEach(function (value) {
         let row = {};
-        valueDate = value[1]; // value[0]は都市名
+        let passedTime = value[1];
 
-        let M = date.getMonth() + 1;
-        let M_EN = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
-        MM = M_EN[M - 1];
+        
+        let monthName = monthEnglish[currentDate.getMonth()];
 
-        let D = date.getDate();
+        let date = currentDate.getDate();
 
         // GMTに一度戻してdatelistの時差を増減する
-        let h = date.getHours() - 9 + parseInt(valueDate);
-        let m = date.getMinutes();
+        let hour = currentDate.getHours() - 9 + parseInt(passedTime);
+        let minute = currentDate.getMinutes();
 
-        if (h < 0) {
-            D = D - 1;
-            h = 24 + h;
+        if (hour < 0) {
+            date = date - 1;
+            hour = 24 + hour;
         }
 
-        if (D === 1 || D === 11 || D === 21 || D === 31) {
-            D = D + 'st';
-        } else if (D === 2 || D === 12 || D === 22) {
-            D = D + 'nd';
-        } else if (D === 3 || D === 13 || D === 23) {
-            D = D + 'rd';
+        if (date === 1 || date === 11 || date === 21 || date === 31) {
+            date = date + 'st';
+        } else if (date === 2 || date === 12 || date === 22) {
+            date = date + 'nd';
+        } else if (date === 3 || date === 13 || date === 23) {
+            date = date + 'rd';
         } else {
-            D = D + 'th';
+            date = date + 'th';
         }
 
-        let checkMeridian = h < 12 ? 'a.m.' : 'p.m.';
+        let checkMeridian = hour < 13 ? 'a.m.' : 'p.m.';
 
         row = {
             name: value[0],
-            date: (MM + ' ' + D).padEnd(9),
-            time: ('00' + (h % 12)).slice(-2) + ':' + ('00' + m).slice(-2) + ' ' +	checkMeridian
+            date: (monthName + ' ' + date).padEnd(9),
+            time: ('00' + (hour % 13)).slice(-2) + ':' + ('00' + minute).slice(-2) + ' ' +	checkMeridian
         }
             
         data.push(row);
     });
-
-    let embed = new Discord.MessageEmbed();
-    data.forEach(function (value) {
-        embed.setTitle('This bot doesn\'t consider daylight saving time!')
-            .addField(value.name, value.date + value.time, true)
-            .setColor('RANDOM')
-    });
-    return embed;
-}
-
-// 都市を追加
-function addTime(msgContent) {
-    data = msgContent.split(' ')[1] + '\r\n';
-
-    fs.appendFileSync('./datelist.txt', data, (err) => {
-        if (err)  {
-            return false;
-        }
-    });
     
-    return true;
+    return createEmbed('/time', data);
 }
 
-function deleteTime(msgContent) {
+// 都市追加
+function addTime(msgContent) {
+    let addData = msgContent.split(' ')[1];
+    let data = [addData.split(',')[0], addData.split(',')[1]];
+
     let dateList = csvSync(fs.readFileSync('./datelist.txt'));
 
+    dateList.push(data);
+
+    // 追加予定の都市を加えた配列に対してGMTとの時差が小さい順にソート
+    dateList.sort(function(a, b){
+        return (a[1] - b[1]);
+    })
+
     fs.unlinkSync('./datelist.txt');
-
-
+    
     dateList.forEach(function (value) {
-        valueDate = value[0]; // value[0]は都市名
-
-        if (valueDate !== msgContent.split(' ')[1]) {
+        if (value[0] !== msgContent.split(' ')[1]) {
             let data = value[0] + ',' + value[1] + '\r\n';
             
             fs.appendFileSync('./datelist.txt', data, (err) => {
                 if (err)  {
-                    return false;
+                    return {
+                        embed: createEmbed(msgContent, false), 
+                        flg: false
+                    };
                 }
-            });}
-        
-    })
-    return true;
+            });
+        }
+    });
+
+    return {
+        embed: createEmbed(msgContent, true), 
+        flg: true
+    };
+}
+
+// 都市削除
+function deleteTime(msgContent) {
+    let dateList = csvSync(fs.readFileSync('./datelist.txt'));
+
+    fs.unlinkSync('./datelist.txt');
+    
+    dateList.forEach(function (value) {
+        if (value[0] !== msgContent.split(' ')[1]) {
+            let data = value[0] + ',' + value[1] + '\r\n';
+            
+            fs.appendFileSync('./datelist.txt', data, (err) => {
+                if (err)  {
+                    return {
+                        embed: createEmbed(msgContent, false), 
+                        flg: false
+                    };
+                }
+            });
+        }
+    });
+
+    return {
+        embed: createEmbed(msgContent, true), 
+        flg: true
+    };
+}
+
+// embed作成
+function createEmbed(msgContent, data) {
+    let embed = new Discord.MessageEmbed();
+
+    if (msgContent === '/time') {
+        data.forEach(function (value) {
+            embed
+                .setTitle('This bot doesn\'t consider daylight saving time!')
+                .addField(value.name, value.date + value.time, true)
+                .setColor('RANDOM')
+            ;
+        });
+    } else if (msgContent.includes('/time-add')) {
+        let cityName = msgContent.split(' ')[1].split(',')[0];
+        if (data === true) {
+            embed
+                .setTitle('Success!')
+                .setDescription(cityName + ' の登録に成功しました！\r\n' + 'Succeed in adding ' + cityName + '.')
+                .setColor('RANDOM')
+            ;
+        } else {
+            embed
+                .setTitle('Failure!')
+                .setDescription(cityName + ' の登録に失敗しました！\r\n' + 'Failed to add ' + cityName + '.')
+                .setColor('RANDOM')
+            ;
+        }
+    } else if (msgContent.includes('/time-delete')) {
+        let cityName = msgContent.split(' ')[1];
+        if (data === true) {
+            embed
+                .setTitle('Success!')
+                .setDescription(cityName + ' の削除に成功しました！\r\n' + 'Succeed in deleting ' + cityName + '.')
+                .setColor('RANDOM')
+            ;
+        } else {
+            embed
+                .setTitle('Failure!')
+                .setDescription(cityName + ' の削除に失敗しました！\r\n' + 'Failed to delete ' + cityName + '.')
+                .setColor('RANDOM')
+            ;
+        }
+    }
+
+    return embed;    
 }
 
 main();
