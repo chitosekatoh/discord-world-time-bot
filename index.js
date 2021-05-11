@@ -12,14 +12,20 @@ function main() {
 
     client.on('message', async msg => {
         if (msg.content === '/time') {
-            let embed = new Discord.MessageEmbed();
-            showTime().forEach(function (value) {
-                embed.setTitle('This bot doesn\'t consider daylight saving time!')
-                    .addField(value.name, value.date + value.time, true)
-                    .setColor('RANDOM')
-            });
-            msg.reply(embed);
+            msg.reply(showTime());
         }   
+
+        if (msg.content.includes('/time-add')) {
+            let result = addTime(msg.content);
+
+            if (result) {
+                msg.reply("都市の登録に成功しました。");
+                msg.reply(showTime());
+            } else {
+                msg.reply("都市の登録に失敗しました。");
+            }
+            
+        }
     });
 
     client.login(BOT_TOKEN);
@@ -71,7 +77,26 @@ function showTime() {
         data.push(row);
     });
 
-    return data;
+    let embed = new Discord.MessageEmbed();
+    data.forEach(function (value) {
+        embed.setTitle('This bot doesn\'t consider daylight saving time!')
+            .addField(value.name, value.date + value.time, true)
+            .setColor('RANDOM')
+    });
+    return embed;
+}
+
+// 都市を追加
+function addTime(msgContent) {
+    data = '\r\n' + msgContent.split(' ')[1];
+
+    fs.appendFileSync('./datelist.txt', data, (err) => {
+        if (err)  {
+            return false;
+        }
+    });
+    
+    return true;
 }
 
 main();
