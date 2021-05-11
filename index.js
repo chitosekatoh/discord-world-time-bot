@@ -16,19 +16,29 @@ function main() {
         }   
 
         if (msg.content.includes('/time-add')) {
-            let result = addTime(msg.content);
-
-            if (result.flg) {
-                msg.reply(result.embed);
-                msg.reply(showTime());
+            if(!msg.content.split(' ')[1]) {
+                msg.reply(createEmbed(msg.content, 'emptyAll'))
             } else {
-                msg.reply(result.embed);
+                if(!msg.content.split(' ')[1].split(',')[0]) {
+                    msg.reply(createEmbed(msg.content, 'emptyCityName'))
+                } else if(!msg.content.split(' ')[1].split(',')[1]) {
+                    msg.reply(createEmbed(msg.content, 'emptyTimeZone'))
+                } else {
+                    let result = addTime(msg.content);
+
+                    if (result.flg) {
+                        msg.reply(result.embed);
+                        msg.reply(showTime());
+                    } else {
+                        msg.reply(result.embed);
+                    }
+                }
             }
         }
 
         if (msg.content.includes('/time-delete')) {
             if (!msg.content.split(' ')[1]) {
-                msg.reply("都市を指定してください。")
+                msg.reply(createEmbed(msg.content, 'emptyCityName'))
             } else {
                 let result = deleteTime(msg.content);
 
@@ -170,34 +180,74 @@ function createEmbed(msgContent, data) {
             ;
         });
     } else if (msgContent.includes('/time-add')) {
-        let cityName = msgContent.split(' ')[1].split(',')[0];
-        if (data === true) {
-            embed
-                .setTitle('Success!')
-                .setDescription(cityName + ' の登録に成功しました！\r\n' + 'Succeed in adding ' + cityName + '.')
-                .setColor('RANDOM')
-            ;
-        } else {
-            embed
-                .setTitle('Failure!')
-                .setDescription(cityName + ' の登録に失敗しました！\r\n' + 'Failed to add ' + cityName + '.')
-                .setColor('RANDOM')
-            ;
+        let cityName = '';
+
+        if (data === true || data === false ) {
+            cityName = msgContent.split(' ')[1].split(',')[0];
+        }
+
+        switch (data) {
+            case true:
+                embed
+                    .setTitle('Success!')
+                    .setDescription(cityName + ' の登録に成功しました！\r\n' + 'Succeed in adding ' + cityName + '.')
+                    .setColor('RANDOM')
+                ;
+                break;
+            case false:
+                embed
+                    .setTitle('Failure!')
+                    .setDescription(cityName + ' の登録に失敗しました！\r\n' + 'Failed to add ' + cityName + '.')
+                    .setColor('RANDOM')
+                ;
+                break;
+            case 'emptyAll':
+                embed
+                    .setTitle('Failure!')
+                    .setDescription('都市と時間帯を指定してください！\r\n' + 'Please specify city and time zone.')
+                    .setColor('RANDOM')
+                ;
+                break;
+            case 'emptyCityName':
+                embed
+                    .setTitle('Failure!')
+                    .setDescription('都市を指定してください！\r\n' + 'Please specify city.')
+                    .setColor('RANDOM')
+                ;
+                break;
+            case 'emptyTimeZone': 
+                embed
+                    .setTitle('Failure!')
+                    .setDescription('時間帯を指定してください！\r\n' + 'Please specify time zone.')
+                    .setColor('RANDOM')
+                ;
+                break;
         }
     } else if (msgContent.includes('/time-delete')) {
         let cityName = msgContent.split(' ')[1];
-        if (data === true) {
-            embed
-                .setTitle('Success!')
-                .setDescription(cityName + ' の削除に成功しました！\r\n' + 'Succeed in deleting ' + cityName + '.')
-                .setColor('RANDOM')
-            ;
-        } else {
-            embed
-                .setTitle('Failure!')
-                .setDescription(cityName + ' の削除に失敗しました！\r\n' + 'Failed to delete ' + cityName + '.')
-                .setColor('RANDOM')
-            ;
+
+        switch (data) {
+            case true:
+                embed
+                    .setTitle('Success!')
+                    .setDescription(cityName + ' の削除に成功しました！\r\n' + 'Succeed in deleting ' + cityName + '.')
+                    .setColor('RANDOM')
+                ;
+                break;
+            case false:
+                embed
+                    .setTitle('Failure!')
+                    .setDescription(cityName + ' の削除に失敗しました！\r\n' + 'Failed to delete ' + cityName + '.')
+                    .setColor('RANDOM')
+                ;
+                break;
+            case 'emptyCityName':
+                embed
+                    .setTitle('Failure!')
+                    .setDescription('都市を指定してください！\r\n' + 'Please specify city.')
+                    .setColor('RANDOM')
+                ;
+                break;
         }
     }
 
