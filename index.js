@@ -24,7 +24,21 @@ function main() {
             } else {
                 msg.reply("都市の登録に失敗しました。");
             }
-            
+        }
+
+        if (msg.content.includes('/time-delete')) {
+            if (!msg.content.split(' ')[1]) {
+                msg.reply("都市を指定してください。")
+            } else {
+                let result = deleteTime(msg.content);
+
+                if (result) {
+                    msg.reply("都市の削除に成功しました。");
+                    msg.reply(showTime());
+                } else {
+                    msg.reply("都市の削除に失敗しました。");
+                }
+            }
         }
     });
 
@@ -88,7 +102,7 @@ function showTime() {
 
 // 都市を追加
 function addTime(msgContent) {
-    data = '\r\n' + msgContent.split(' ')[1];
+    data = msgContent.split(' ')[1] + '\r\n';
 
     fs.appendFileSync('./datelist.txt', data, (err) => {
         if (err)  {
@@ -96,6 +110,28 @@ function addTime(msgContent) {
         }
     });
     
+    return true;
+}
+
+function deleteTime(msgContent) {
+    let dateList = csvSync(fs.readFileSync('./datelist.txt'));
+
+    fs.unlinkSync('./datelist.txt');
+
+
+    dateList.forEach(function (value) {
+        valueDate = value[0]; // value[0]は都市名
+
+        if (valueDate !== msgContent.split(' ')[1]) {
+            let data = value[0] + ',' + value[1] + '\r\n';
+            
+            fs.appendFileSync('./datelist.txt', data, (err) => {
+                if (err)  {
+                    return false;
+                }
+            });}
+        
+    })
     return true;
 }
 
