@@ -1,8 +1,0 @@
-Italy/Rome,+1
-Finland/Helsinki,+2
-Germany/Frankfurt,+2
-Zurich/Switzerland,+2
-Russia/Moscow,+3
-Rumania/Bucharest,+3
-Indonesia/Jakarta,+7
-Japan/Tokyo,+9
