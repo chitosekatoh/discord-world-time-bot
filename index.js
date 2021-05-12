@@ -75,11 +75,11 @@ function showTime() {
             hour = 24 + hour;
         }
 
-        if (date === 1 || date === 11 || date === 21 || date === 31) {
+        if (date === 1 || date === 21 || date === 31) {
             date = date + 'st';
-        } else if (date === 2 || date === 12 || date === 22) {
+        } else if (date === 2 || date === 22) {
             date = date + 'nd';
-        } else if (date === 3 || date === 13 || date === 23) {
+        } else if (date === 3 || date === 23) {
             date = date + 'rd';
         } else {
             date = date + 'th';
