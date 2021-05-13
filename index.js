@@ -81,7 +81,7 @@ function showTime() {
         }
 
         let checkMeridian = hour < 12 ? 'a.m.' : 'p.m.';
-        let hourDisp = (hour % 12).slice(-2);
+        let hourDisp = ('00' + hour % 12).slice(-2);
         let miniteDisp = ('00' + minute).slice(-2);
 
         // 00:XX p.m.の場合のみ、12:XX a.m.へ変更
@@ -93,7 +93,7 @@ function showTime() {
         row = {
             name: value[0],
             date: (monthName + ' ' + date).padEnd(9),
-            time: '00' + hourDisp + ':' + miniteDisp + ' ' +	checkMeridian
+            time: hourDisp + ':' + miniteDisp + ' ' +	checkMeridian
         }
             
         data.push(row);
