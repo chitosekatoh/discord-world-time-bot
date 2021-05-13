@@ -70,11 +70,6 @@ function showTime() {
         let hour = currentDate.getHours() - 9 + parseInt(passedTime);
         let minute = currentDate.getMinutes();
 
-        if (hour < 0) {
-            date = date - 1;
-            hour = 24 + hour;
-        }
-
         if (date === 1 || date === 21 || date === 31) {
             date = date + 'st';
         } else if (date === 2 || date === 22) {
@@ -86,11 +81,18 @@ function showTime() {
         }
 
         let checkMeridian = hour < 12 ? 'a.m.' : 'p.m.';
+        let hourDisp = (hour % 12).slice(-2);
+
+        // 00:XX p.m.の場合のみ、12:XX a.m.へ変更
+        if (hourDisp === 0 && checkMeridian === 'p.m.') {
+            hourDisp = 12;
+            checkMeridian = 'a.m.';
+        }
 
         row = {
             name: value[0],
             date: (monthName + ' ' + date).padEnd(9),
-            time: ('00' + (hour % 12)).slice(-2) + ':' + ('00' + minute).slice(-2) + ' ' +	checkMeridian
+            time: ('00' + hourDisp + ':' + ('00' + minute).slice(-2) + ' ' +	checkMeridian
         }
             
         data.push(row);
