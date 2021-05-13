@@ -85,12 +85,12 @@ function showTime() {
             date = date + 'th';
         }
 
-        let checkMeridian = hour < 13 ? 'a.m.' : 'p.m.';
+        let checkMeridian = hour < 12 ? 'a.m.' : 'p.m.';
 
         row = {
             name: value[0],
             date: (monthName + ' ' + date).padEnd(9),
-            time: ('00' + (hour % 13)).slice(-2) + ':' + ('00' + minute).slice(-2) + ' ' +	checkMeridian
+            time: ('00' + (hour % 12)).slice(-2) + ':' + ('00' + minute).slice(-2) + ' ' +	checkMeridian
         }
             
         data.push(row);
