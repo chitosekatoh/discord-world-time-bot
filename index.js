@@ -162,10 +162,6 @@ class WorldTime {
             let hour = currentDate.getHours() - 9 + value.offset;
             let minute = currentDate.getMinutes();
 
-            if (hour < 0) {
-                date = date - 1;
-                hour = 24 + hour;
-            }
 
             if (date === 1 || date === 11 || date === 21 || date === 31) {
                 date = date + 'st';
@@ -177,12 +173,20 @@ class WorldTime {
                 date = date + 'th';
             }
 
-            let checkMeridian = hour < 13 ? 'a.m.' : 'p.m.';
+            let checkMeridian = hour < 12 ? 'a.m.' : 'p.m.';
+            let hourDisp = ('00' + hour % 12).slice(-2);
+            let miniteDisp = ('00' + minute).slice(-2);
+
+            // 00:XX p.m.の場合のみ、12:XX a.m.へ変更
+            if (hourDisp === 0 && checkMeridian === 'p.m.') {
+                hourDisp = 12;
+                checkMeridian = 'a.m.';
+            }
 
             row = {
                 name: value.label,
                 date: (monthName + ' ' + date).padEnd(9),
-                time: ('00' + (hour % 13)).slice(-2) + ':' + ('00' + minute).slice(-2) + ' ' +	checkMeridian
+                time: hourDisp + ':' + miniteDisp + ' ' +	checkMeridian
             }
                 
             data.push(row);
