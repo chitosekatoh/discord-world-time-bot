@@ -1,7 +1,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const monthEnglish = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
 const guildId = process.env.GUILD_ID;
 const worldTimeCommands = {
     data: {
@@ -151,52 +150,28 @@ class WorldTime {
     
     show() {
         let dateList = JSON.parse(fs.readFileSync('./datelist.json', 'utf-8'));
-        let currentDate = new Date();
         let data = [];
 
         dateList.forEach(function (value) {
             let row = {};
-            let monthName = monthEnglish[currentDate.getMonth()];
-            let date = currentDate.getDate();
-            // GMTに一度戻してdatelistの時差を増減する
-            let hour = currentDate.getHours() - 9 + value.offset;
-            let minute = currentDate.getMinutes();
 
+            let currentDate = new Date();
 
-            if (date === 1 || date === 11 || date === 21 || date === 31) {
-                date = date + 'st';
-            } else if (date === 2 || date === 12 || date === 22) {
-                date = date + 'nd';
-            } else if (date === 3 || date === 13 || date === 23) {
-                date = date + 'rd';
-            } else {
-                date = date + 'th';
-            }
-
-            let checkMeridian = hour < 12 ? 'a.m.' : 'p.m.';
-            let hourDisp = ('00' + hour % 12).slice(-2);
-            let miniteDisp = ('00' + minute).slice(-2);
-
-            // 00:XX p.m.の場合のみ、12:XX a.m.へ変更
-            if (hourDisp === 0 && checkMeridian === 'p.m.') {
-                hourDisp = 12;
-                checkMeridian = 'a.m.';
-            }
-
+            currentDate.setHours(currentDate.getHours() + value.offset);
             row = {
                 name: value.label,
-                date: (monthName + ' ' + date).padEnd(9),
-                time: hourDisp + ':' + miniteDisp + ' ' +	checkMeridian
+                data: currentDate.toDateString() + '\/' + currentDate.toTimeString().slice(0, 5)
             }
-                
+
             data.push(row);
         });
 
         let embed = new Discord.MessageEmbed();
         embed.setTitle('This bot doesn\'t consider daylight saving time!');
         embed.setColor('RANDOM');
-        data.forEach(function (value) { embed.addField(value.name, value.date + value.time, true); });
+        data.forEach(function (value) { embed.addField(value.name, value.data, true); });
         
+        console.log(embed);
         return embed;
     }
 
