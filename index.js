@@ -160,7 +160,7 @@ class WorldTime {
             currentDate = new Date(
                 currentDate.getUTCFullYear(),
                 currentDate.getUTCMonth(),
-                currentDate.getUTCDay(),
+                currentDate.getUTCDate(),
                 currentDate.getUTCHours(),
                 currentDate.getUTCMinutes()
             );
