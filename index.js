@@ -157,6 +157,14 @@ class WorldTime {
 
             let currentDate = new Date();
 
+            currentDate = new Date(
+                currentDate.getUTCFullYear(),
+                currentDate.getUTCMonth(),
+                currentDate.getUTCDay(),
+                currentDate.getUTCHours(),
+                currentDate.getUTCMinutes()
+            );
+
             currentDate.setHours(currentDate.getHours() + value.offset);
             row = {
                 name: value.label,
@@ -171,7 +179,6 @@ class WorldTime {
         embed.setColor('RANDOM');
         data.forEach(function (value) { embed.addField(value.name, value.data, true); });
         
-        console.log(embed);
         return embed;
     }
 
